@@ -22,6 +22,7 @@ public class Simon extends JFrame implements ActionListener {
     int score = 1;
 
     Simon() {
+        super("Visual Learner Type Test");
         setExtendedState(JFrame.MAXIMIZED_BOTH);  //create JFrame
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -182,11 +183,11 @@ public class Simon extends JFrame implements ActionListener {
                     blueb.addActionListener(this);
                     blueb.setActionCommand("2" + o);
                     
-                    greenb.addActionListener(this);
-                    greenb.setActionCommand("3" + o);
-                    
                     yellowb.addActionListener(this);
-                    yellowb.setActionCommand("4" + o);
+                    yellowb.setActionCommand("3" + o);
+                    
+                    greenb.addActionListener(this);
+                    greenb.setActionCommand("4" + o);
                 }
             }
         } while (isMatch());
