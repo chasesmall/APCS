@@ -1,10 +1,4 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -19,7 +13,6 @@ public class Simon extends JFrame implements ActionListener {
 
     ArrayList<Integer> pattern = new ArrayList<>();
     ArrayList<Integer> guess = new ArrayList<>();
-    int score = 1;
     private static int number = 0;
     JLabel sboard;
     JLabel color;
@@ -28,12 +21,9 @@ public class Simon extends JFrame implements ActionListener {
     JButton yellowb;
     JButton greenb;
 
-    boolean done = false;
-
     Simon() {
         super("Visual Learner Type Test");
         setSize(1280, 720);
-//        setExtendedState(JFrame.MAXIMIZED_BOTH);  //create JFrame
         requestFocus();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -71,7 +61,7 @@ public class Simon extends JFrame implements ActionListener {
         yellowb.setOpaque(true);
         yellowb.setFont(new Font("Arial", Font.PLAIN, 30));
 
-        sboard = new JLabel(String.valueOf(score), SwingConstants.CENTER);
+        sboard = new JLabel(String.valueOf(number), SwingConstants.CENTER);
         sboard.setBackground(Color.gray);
         sboard.setOpaque(true);
         sboard.setFont(new Font("Arial", Font.BOLD, 30));
@@ -126,16 +116,12 @@ public class Simon extends JFrame implements ActionListener {
     }
 
     public void gameOver() {
-        done = true;
-        Dimension dem = Toolkit.getDefaultToolkit().getScreenSize();
-        setLocation(dem.width / 2 - 250, dem.height / 2 - 250);
-        setSize(500, 500);
+        setVisible(false);
+        getContentPane().removeAll();
+        setLayout(new FlowLayout());
+        JLabel done = new JLabel("You scored: " + String.valueOf(number), SwingConstants.CENTER);
+        add(done);
         setVisible(true);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JPanel end = new JPanel();
-        JLabel done = new JLabel("You scored: " + String.valueOf(score), SwingConstants.CENTER);
-        end.add(done);
-        add(end);
     }
 
     public void sleep(long time) {
@@ -146,15 +132,7 @@ public class Simon extends JFrame implements ActionListener {
         }
     }
 
-    public void doGuess() {
-        action(false);
-        guess.clear();
-        number++;
-        pattern.add((int) (Math.random() * 4) + 1);
-
-        sboard.setText(String.valueOf(number));
-
-        //display pattern\\
+    public void displayPattern() {
         Color newColor;
         for (Integer k : pattern) {
             color.setBackground(Color.GRAY);
@@ -180,7 +158,6 @@ public class Simon extends JFrame implements ActionListener {
             color.repaint();
             this.repaint();
             setVisible(true);
-            System.out.println("showing " + newColor.toString());
 
             sleep(1);
 
@@ -189,10 +166,18 @@ public class Simon extends JFrame implements ActionListener {
             color.repaint();
             this.repaint();
             setVisible(true);
-
-            System.out.println("back in black");
         }
 
+    }
+
+    public void doGuess() {
+        action(false);
+        guess.clear();
+        number++;
+        pattern.add((int) (Math.random() * 4) + 1);
+
+        sboard.setText(String.valueOf(number));
+        displayPattern();
         action(true);
     }
 
@@ -209,18 +194,20 @@ public class Simon extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         Runnable r = () -> {
-            System.out.println("BUTTON: " + e.getActionCommand());
             guess.add(Integer.parseInt(e.getActionCommand()));
-            if (guess.size() == number && !isMatch()) {
-                gameOver();
-                return;
+            if (guess.size() == number) {
+                if (!isMatch()) {
+                    gameOver();
+                    return;
+                } else {
+                    doGuess();
+                }
             }
-            doGuess();
         };
         Thread t = new Thread(r);
         t.start();
     }
-    
+
     public void action(boolean b) {
         if (b) {
             redb.addActionListener(this);
